@@ -25,6 +25,12 @@ def arrayToInt(array):
 def seleccion():
   pass
 
+def seleccion_ruleta(poblacion):
+
+    fitness = sum([cromosoma.fitness for cromosoma in poblacion])
+    cromosoma_probabilidad = [(cromosoma.fitness*100) for cromosoma in poblacion] 
+    return np.random.choice(poblacion = cromosoma_probabilidad)
+
 def crossover():
   pass
 
