@@ -2,16 +2,19 @@ import random
 import numpy as np
 
 def inicializarPoblacion(poblacion, cromosomas):
-  return [random.randint(0, 1) for i in range(cromosomas) for i in range(poblacion)]
+  return [[random.randint(0, 1) for i in range(cromosomas)] for i in range(poblacion)]
 
-def objetive(cromosoma):
-  return (arrayToInt(cromosoma) ** 2)
+def objective(cromosoma):
+  return ((arrayToInt(cromosoma)) ** 2)
 
 def fitness(poblacion):
-  array = []
+  obj = []
+  fit = []
   for i in range(len(poblacion)):
-    array.insert(-1, objetive(poblacion[i]))
-  return array
+    obj.append(objective(poblacion[i]))
+  for i in range(len(poblacion)):
+    fit.append(round(obj[i] / sum(obj), 4))
+  return fit
 
 def arrayToInt(array):
   string = str(array[0])
@@ -50,7 +53,10 @@ def algoritmoGenetico(fitness, tamPoblacion, tamCromosoma, numGeneraciones, prob
 # algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05)
 
 pob = inicializarPoblacion(10, 5)
+print(pob)
+print("\n")
 for i in range(len(pob)):
-  print(objetive(pob[i]))
+  print(objective(pob[i]))
+print("\n")
 print(fitness(pob))
-# print(objetive(inicializarPoblacion(1, 5)))
+# print(objective(inicializarPoblacion(1, 5)))
