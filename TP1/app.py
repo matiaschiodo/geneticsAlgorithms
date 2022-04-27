@@ -1,3 +1,4 @@
+from calendar import c
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -5,58 +6,66 @@ import matplotlib.pyplot as plt
 def inicializarPoblacion(poblacion, cromosomas):
   return [[random.randint(0, 1) for i in range(cromosomas)] for i in range(poblacion)]
 
-def objective(cromosoma):
-  return ((arrayToInt(cromosoma)) ** 2)
-
-def fitness(poblacion):
-  obj = []
-  fit = []
-  suma = 0
-  for i in range(len(poblacion)):
-    obj.append(objective(poblacion[i]))
-  for i in range(len(poblacion)):
-    fit.append(obj[i] / sum(obj))
-  grafica(fit)
-  return fit
-
-def grafica(porcentas):
-#DEFINIMOS ETIQUETAS  
-  etiquetas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] #labels
-
-  #PORCENTAJE DE CADA PORCIÓN. (parametro=porcentas)
-
-  #DEFIMIMOS COLORES
-  colores = ['#1abc9c', '#f1c40f', '#8e44ad', '#e74c3c', '#34495e', '#3498db', '#FFFF00', '#808000', '#32a852', '#008000'] #LabelColor
-
-  #DIBUJAMOS GRÁFICA.  
-  plt.pie(porcentas, labels = etiquetas, colors=colores,
-          startangle=90, explode = (0.1, 0.1, 0.1, 0.1, 0.1, 0.1,0.1, 0.1, 0.1,0.1),
-          radius = 1.2, autopct = '%1.2f%%')
-
-  #TITULO
-  plt.title('Gráfica Circular')
-
-  #MOSTRAMOS GRÁFICA.
-  plt.show()
-  
-
 def arrayToInt(array):
   string = str(array[0])
   for i in range(1, len(array)):
     string += str(array[i])
   return int(string, 2)
 
-def seleccion():
-  pass
+def objetivo(cromosoma):
+  return ((arrayToInt(cromosoma)) ** 2)
 
-def seleccion_ruleta(poblacion):
+def fitness(poblacion):
+  obj = []
+  fitness = []
+  for i in range(len(poblacion)):
+    obj.append(objetivo(poblacion[i]))
+  for i in range(len(poblacion)):
+    fitness.append(obj[i] / sum(obj))
+  return fitness
 
-    fitness = sum([cromosoma.fitness for cromosoma in poblacion])
-    cromosoma_probabilidad = [(cromosoma.fitness*100) for cromosoma in poblacion] 
-    return np.random.choice(poblacion = cromosoma_probabilidad)
+def grafica(porcentajes):
+  #DEFINIMOS ETIQUETAS  
+  etiquetas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] #labels
+  #PORCENTAJE DE CADA PORCIÓN. (parametro=porcentajes)
 
-def crossover():
-  pass
+  #DEFIMIMOS COLORES
+  colores = ['#1abc9c', '#f1c40f', '#8e44ad', '#e74c3c', '#34495e', '#3498db', '#FFFF00', '#808000', '#32a852', '#008000'] #LabelColor
+
+  #DIBUJAMOS GRÁFICA.  
+  plt.pie(porcentajes, labels = etiquetas, colors=colores, startangle=90, explode = (0.1, 0.1, 0.1, 0.1, 0.1, 0.1,0.1, 0.1, 0.1,0.1), radius = 1.2, autopct = '%1.2f%%')
+
+  #TITULO
+  plt.title('Gráfica Circular')
+
+  #MOSTRAMOS GRÁFICA.
+  plt.show()
+
+def ruleta(fitness):
+  ruleta = []
+  for i in range(len(fitness)):
+    ruleta.append(round(fitness[i] * 100, 2))
+  return ruleta
+
+def seleccion(ruleta):
+  cromosomas = []
+  for i in range(len(ruleta)):
+    n = random.randint(0, 99)
+    prob = 0
+    for i in range(0, len(ruleta)):
+      prob += round(ruleta[i])
+      if prob >= n:
+        cromosomas.append(i)
+        break
+  return cromosomas
+
+def crossover(poblacion, cromosomas):
+  for i in range(0, len(poblacion), 2):
+    aux = poblacion[cromosomas[i]][4]
+    poblacion[cromosomas[i]][4] = poblacion[cromosomas[i+1]][4]
+    poblacion[cromosomas[i+1]][4] = aux
+  return poblacion
+    
 
 def mutacion():
   pass
@@ -83,10 +92,13 @@ def algoritmoGenetico(fitness, tamPoblacion, tamCromosoma, numGeneraciones, prob
 # algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05)
 
 pob = inicializarPoblacion(10, 5)
-print(pob)
-print("\n")
+print("Poblacion inicial: ", pob)
+print("Cromosomas -> fitness")
 for i in range(len(pob)):
-  print(objective(pob[i]))
-print("\n")
-print(fitness(pob))
-# print(objective(inicializarPoblacion(1, 5)))
+  print(arrayToInt(pob[i]), "    ->    ", objetivo(pob[i]))
+print("Fitness: ", fitness(pob))
+print("Ruleta: ", ruleta(fitness(pob)))
+seleccionados = seleccion(ruleta(fitness(pob)))
+print("Seleccion: ", seleccionados)
+print("Crossover: ", crossover(pob, seleccionados))
+# print(grafica(fitness(pob)))
