@@ -2,8 +2,6 @@ from calendar import c
 import random
 import numpy as np
 import matplotlib.pyplot as plt
-from numpy.random import randint
-from numpy.random import rand
 
 def inicializarPoblacion(poblacion, cromosomas):
   return [[random.randint(0, 1) for i in range(cromosomas)] for i in range(poblacion)]
