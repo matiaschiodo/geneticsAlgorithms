@@ -60,6 +60,13 @@ def seleccion(ruleta):
         break
   return cromosomas
 
+'''def torneo(fitness, poblacion):
+seleccionado = random.randint(pob)
+	for i in range (len(pob)):
+		if fitness[i] < fitness[seleccionado]:
+			seleccionado = i
+	return pob[seleccionado]
+  '''
 
 def crossover(poblacion, cromosomas):
   for i in range(0, len(poblacion), 2):
