@@ -2,6 +2,8 @@ from calendar import c
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+from numpy.random import randint
+from numpy.random import rand
 
 def inicializarPoblacion(poblacion, cromosomas):
   return [[random.randint(0, 1) for i in range(cromosomas)] for i in range(poblacion)]
@@ -47,6 +49,7 @@ def ruleta(fitness):
     ruleta.append(round(fitness[i] * 100, 2))
   return ruleta
 
+
 def seleccion(ruleta):
   cromosomas = []
   for i in range(len(ruleta)):
@@ -59,15 +62,33 @@ def seleccion(ruleta):
         break
   return cromosomas
 
+
 def crossover(poblacion, cromosomas):
   for i in range(0, len(poblacion), 2):
     aux = poblacion[cromosomas[i]][4]
     poblacion[cromosomas[i]][4] = poblacion[cromosomas[i+1]][4]
     poblacion[cromosomas[i+1]][4] = aux
   return poblacion
-    
+
+
+
+'''def seleccion_padres(cromosomas):
+  p1 = random.choice(cromosomas)
+  p2 = random.choice(cromosomas)
+  return [p1, p2]
+
+
+def crossover(p1, p2):
+  h1, h2 = p1.copy(), p2.copy()
+  if rand() < prob_cross:
+  corte = random.randint(1, len(pob)-1)
+  h1 = p1[:corte] + p2[corte:]
+  h2 = p2[:corte] + p1[corte:]
+  return [h1,h2]'''
+
 
 def mutacion():
+ # if rand() < prob_mut:
   pass
 
 def maximo():
@@ -102,3 +123,21 @@ seleccionados = seleccion(ruleta(fitness(pob)))
 print("Seleccion: ", seleccionados)
 print("Crossover: ", crossover(pob, seleccionados))
 # print(grafica(fitness(pob)))
+
+'''pob = inicializarPoblacion(10, 5)
+print("Poblacion inicial: ", pob)
+print("Nro Decimal -> Objetivo")
+for i in range(len(pob)):
+  print(arrayToInt(pob[i]), "            ", objetivo(pob[i]))
+print("Fitness: ", fitness(pob))
+print("Ruleta: ", ruleta(fitness(pob)))
+seleccionados = seleccion(ruleta(fitness(pob)))
+print("Seleccion: ", seleccionados)
+#falta tirar un num random para ver si se hace crossover o mutacion
+for i in range (0,5):
+  p1 = random.choice(seleccionados)
+  p2 = random.choice(seleccionados)
+  print("Padres", p1,p2)
+  print("Crossover: ", crossover(p1, p2))
+# print(grafica(fitness(pob)))
+'''
