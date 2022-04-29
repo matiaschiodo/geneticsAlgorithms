@@ -29,16 +29,12 @@ def grafica(porcentajes):
   #DEFINIMOS ETIQUETAS  
   etiquetas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] #labels
   #PORCENTAJE DE CADA PORCIÓN. (parametro=porcentajes)
-
   #DEFIMIMOS COLORES
   colores = ['#1abc9c', '#f1c40f', '#8e44ad', '#e74c3c', '#34495e', '#3498db', '#FFFF00', '#808000', '#32a852', '#008000'] #LabelColor
-
   #DIBUJAMOS GRÁFICA.  
   plt.pie(porcentajes, labels = etiquetas, colors=colores, startangle=90, explode = (0.1, 0.1, 0.1, 0.1, 0.1, 0.1,0.1, 0.1, 0.1,0.1), radius = 1.2, autopct = '%1.2f%%')
-
   #TITULO
   plt.title('Gráfica Circular')
-
   #MOSTRAMOS GRÁFICA.
   plt.show()
 
@@ -48,6 +44,16 @@ def ruleta(fitness):
     ruleta.append(round(fitness[i] * 100, 2))
   return ruleta
 
+def tournament(fitness):
+  pob = []
+  while True:
+    n = random.randint(1, 10)
+    n1 = random.randint(1,10)
+    if n1 != n:
+      pob.append(max(fitness[n],fitness[n1]))
+    if len(pob) == 10:
+      break
+  return pob
 
 def seleccion(ruleta):
   cromosomas = []
@@ -103,12 +109,15 @@ def promedioCromosomas(poblacion):
     promedio += arrayToInt(poblacion[i])
   return promedio / len(poblacion)
 
-def algoritmoGenetico(fitness, tamPoblacion, tamCromosoma, numGeneraciones, probCrossover, probMutacion):
+def algoritmoGenetico(fitness, tamPoblacion, tamCromosoma, numGeneraciones, probCrossover, probMutacion, elitismo, torneo):
   maximoTotal, minimoTotal, promedioTotal = 0, 0, 0
   for i in range(numGeneraciones):
     poblacion = inicializarPoblacion(tamPoblacion, tamCromosoma)
     maximo, minimo, promedio = 0, 0, 0
-    poblacion = crossover(poblacion, seleccion(ruleta(fitness(poblacion))), probCrossover, probMutacion)
+    if torneo:
+      poblacion = crossover(poblacion, seleccion(ruleta(fitness(poblacion))), probCrossover, probMutacion, elitismo)
+    else:
+      poblacion = crossover(poblacion, seleccion(tournament(fitness(poblacion))), probCrossover, probMutacion, elitismo)
     maximo = maximoCromosoma(poblacion)
     minimo = minimoCromosoma(poblacion)
     promedio = promedioCromosomas(poblacion)
