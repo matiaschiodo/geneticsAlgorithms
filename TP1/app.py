@@ -155,7 +155,7 @@ while True:
 	opcionMenu = input("Seleccione una opcion: ")
  
 	if opcionMenu=="1":
-	  algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05)
+	  algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05, False, False)
 	#elif opcionMenu=="2":
 	#	pass
 	#elif opcionMenu=="3":
