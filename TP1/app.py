@@ -114,7 +114,7 @@ def promedioCromosomas(poblacion):
     promedio += arrayToInt(poblacion[i])
   return promedio / len(poblacion)
 
-def algoritmoGenetico(fitness, tamPoblacion, tamCromosoma, numGeneraciones, probCrossover, probMutacion, elitismo, torneo):
+def algoritmoGenetico(tamPoblacion, tamCromosoma, numGeneraciones, probCrossover, probMutacion, elitismo, torneo):
   maximoTotal, minimoTotal, promedioTotal = 0, 0, 0
   for i in range(numGeneraciones):
     poblacion = inicializarPoblacion(tamPoblacion, tamCromosoma)
@@ -160,7 +160,7 @@ while True:
 	opcionMenu = input("Seleccione una opcion: ")
  
 	if opcionMenu=="1":
-	  algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05, False, False)
+	  algoritmoGenetico( 10, 5, 200, 0.75, 0.05, False, False)
 	#elif opcionMenu=="2":
 	#	pass
 	#elif opcionMenu=="3":
