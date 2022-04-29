@@ -60,89 +60,82 @@ def seleccion(ruleta):
         break
   return cromosomas
 
-'''def torneo(fitness, poblacion):
-seleccionado = random.randint(pob)
-	for i in range (len(pob)):
-		if fitness[i] < fitness[seleccionado]:
-			seleccionado = i
-	return pob[seleccionado]
-  '''
-
-def crossover(poblacion, cromosomas):
+def crossover(poblacion, cromosomas, probCrossover, probMutacion):
   for i in range(0, len(poblacion), 2):
-    aux = poblacion[cromosomas[i]][4]
-    poblacion[cromosomas[i]][4] = poblacion[cromosomas[i+1]][4]
-    poblacion[cromosomas[i+1]][4] = aux
+    hayCrossover = random.uniform(0, 1)
+    if(hayCrossover < probCrossover):
+      aux = poblacion[cromosomas[i]][4]
+      poblacion[cromosomas[i]][4] = poblacion[cromosomas[i+1]][4]
+      poblacion[cromosomas[i+1]][4] = aux
+      poblacion = mutacion(poblacion, cromosomas[i], cromosomas[i+1], probMutacion)
+    return poblacion
+
+def mutacion(poblacion, cromosoma1, cromosoma2, probMutacion):
+  hayMutacion = random.uniform(0, 1)
+  if(hayMutacion < probMutacion):
+    aux = poblacion[cromosoma1]
+    poblacion[cromosoma1] = poblacion[cromosoma2]
+    poblacion[cromosoma2] = aux
+    aux = poblacion[cromosoma1][1]
+    poblacion[cromosoma1][1] = poblacion[cromosoma2][1]
+    poblacion[cromosoma2][1] = aux
+    return poblacion
   return poblacion
 
+def maximoCromosoma(poblacion):
+  maximo = [0]
+  for i in range(len(poblacion)):
+    if(arrayToInt(poblacion[i]) > arrayToInt(maximo)):
+      maximo = poblacion[i]
+  return maximo
 
+def minimoCromosoma(poblacion):
+  minimo = [1, 1, 1, 1, 1]
+  for i in range(len(poblacion)):
+    if(arrayToInt(poblacion[i]) < arrayToInt(minimo)):
+      minimo = poblacion[i]
+  return minimo
 
-'''def seleccion_padres(cromosomas):
-  p1 = random.choice(cromosomas)
-  p2 = random.choice(cromosomas)
-  return [p1, p2]
-
-
-def crossover(p1, p2):
-  h1, h2 = p1.copy(), p2.copy()
-  if rand() < prob_cross:
-  corte = random.randint(1, len(pob)-1)
-  h1 = p1[:corte] + p2[corte:]
-  h2 = p2[:corte] + p1[corte:]
-  return [h1,h2]'''
-
-
-def mutacion():
- # if rand() < prob_mut:
-  pass
-
-def maximo():
-  pass
-
-def minimo():
-  pass
-
-def promedio():
-  pass
+def promedioCromosomas(poblacion):
+  promedio = 0
+  for i in range(len(poblacion)):
+    promedio += arrayToInt(poblacion[i])
+  return promedio / len(poblacion)
 
 def algoritmoGenetico(fitness, tamPoblacion, tamCromosoma, numGeneraciones, probCrossover, probMutacion):
-  poblacion = inicializarPoblacion(tamPoblacion, tamCromosoma)
+  maximoTotal, minimoTotal, promedioTotal = 0, 0, 0
   for i in range(numGeneraciones):
-    poblacion = seleccion(poblacion, fitness)
-    poblacion = crossover(poblacion, probCrossover)
-    poblacion = mutacion(poblacion, probMutacion)
-  return poblacion
+    poblacion = inicializarPoblacion(tamPoblacion, tamCromosoma)
+    maximo, minimo, promedio = 0, 0, 0
+    poblacion = crossover(poblacion, seleccion(ruleta(fitness(poblacion))), probCrossover, probMutacion)
+    maximo = maximoCromosoma(poblacion)
+    minimo = minimoCromosoma(poblacion)
+    promedio = promedioCromosomas(poblacion)
+    print('Generacion: ', i)
+    print('Poblacion: ', poblacion)
+    print('Maximo: ', maximo, arrayToInt(maximo))
+    print('Minimo: ', minimo, arrayToInt(minimo))
+    print('Promedio: ', promedio)
+    maximoTotal = maximoCromosoma(poblacion)
+    minimoTotal = minimoCromosoma(poblacion)
+    promedioTotal = promedioCromosomas(poblacion)
+  print('Maximo Total: ', maximoTotal, arrayToInt(maximoTotal))
+  print('Minimo Total: ', minimoTotal, arrayToInt(minimoTotal))
+  print('Promedio Total: ', promedioTotal)
+  
 
-# algoritmoGenetico(fitness, 10, 5, 20, 0.75, 0.05)
+algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05)
 # algoritmoGenetico(fitness, 10, 5, 100, 0.75, 0.05)
 # algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05)
 
-pob = inicializarPoblacion(10, 5)
-print("Poblacion inicial: ", pob)
-print("Cromosomas -> fitness")
-for i in range(len(pob)):
-  print(arrayToInt(pob[i]), "    ->    ", objetivo(pob[i]))
-print("Fitness: ", fitness(pob))
-print("Ruleta: ", ruleta(fitness(pob)))
-seleccionados = seleccion(ruleta(fitness(pob)))
-print("Seleccion: ", seleccionados)
-print("Crossover: ", crossover(pob, seleccionados))
+# pob = inicializarPoblacion(10, 5)
+# print("Poblacion inicial: ", pob)
+# print("Cromosomas -> fitness")
+# for i in range(len(pob)):
+#   print(arrayToInt(pob[i]), "    ->    ", objetivo(pob[i]))
+# print("Fitness: ", fitness(pob))
+# print("Ruleta: ", ruleta(fitness(pob)))
+# seleccionados = seleccion(ruleta(fitness(pob)))
+# print("Seleccion: ", seleccionados)
+# print("Crossover: ", crossover(pob, seleccionados, 0.75, 0.05))
 # print(grafica(fitness(pob)))
-
-'''pob = inicializarPoblacion(10, 5)
-print("Poblacion inicial: ", pob)
-print("Nro Decimal -> Objetivo")
-for i in range(len(pob)):
-  print(arrayToInt(pob[i]), "            ", objetivo(pob[i]))
-print("Fitness: ", fitness(pob))
-print("Ruleta: ", ruleta(fitness(pob)))
-seleccionados = seleccion(ruleta(fitness(pob)))
-print("Seleccion: ", seleccionados)
-#falta tirar un num random para ver si se hace crossover o mutacion
-for i in range (0,5):
-  p1 = random.choice(seleccionados)
-  p2 = random.choice(seleccionados)
-  print("Padres", p1,p2)
-  print("Crossover: ", crossover(p1, p2))
-# print(grafica(fitness(pob)))
-'''
