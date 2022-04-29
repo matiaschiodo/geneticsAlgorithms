@@ -2,6 +2,7 @@ from calendar import c
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 def inicializarPoblacion(poblacion, cromosomas):
   return [[random.randint(0, 1) for i in range(cromosomas)] for i in range(poblacion)]
@@ -124,10 +125,39 @@ def algoritmoGenetico(fitness, tamPoblacion, tamCromosoma, numGeneraciones, prob
   print('Promedio Total: ', promedioTotal)
   
 
-algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05)
+#algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05)
 # algoritmoGenetico(fitness, 10, 5, 100, 0.75, 0.05)
 # algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05)
 
+
+def menu():
+	
+	os.system('cls') 
+	print ("Selecciona una opción")
+	print ("\t1 - Seleccion Ruleta")
+	print ("\t2 - Seleccion Ruleta con elitismo")
+	print ("\t3 - Seleccion torneo")
+	print ("\t0 - salir")
+ 
+ 
+while True:
+	
+	menu()
+	opcionMenu = input("Seleccione una opcion: ")
+ 
+	if opcionMenu=="1":
+	  algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05)
+	#elif opcionMenu=="2":
+	#	pass
+	#elif opcionMenu=="3":
+	#	pass
+	elif opcionMenu=="0":
+		break
+	else:
+		print ("")
+		input("No has pulsado ninguna opción correcta...\nPulsa una tecla para continuar")
+
+  
 # pob = inicializarPoblacion(10, 5)
 # print("Poblacion inicial: ", pob)
 # print("Cromosomas -> fitness")
