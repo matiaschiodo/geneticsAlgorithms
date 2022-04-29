@@ -50,7 +50,12 @@ def tournament(fitness):
     n = random.randint(1, 10)
     n1 = random.randint(1,10)
     if n1 != n:
-      pob.append(max(fitness[n],fitness[n1]))
+      if fitness[n] > fitness[n1]:
+        pob.append(fitness[n])
+      else:
+        pob.append(fitness[n1])
+    elif n == n1:
+      pob.append(fitness[n])
     if len(pob) == 10:
       break
   return pob
