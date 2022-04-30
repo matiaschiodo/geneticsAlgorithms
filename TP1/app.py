@@ -23,11 +23,11 @@ def llenarMatriz(decimal,vector):
   i=4
   print("Proceso de convertir",decimal)
   while True:
-    if i == 0:
-      break
     residuo = int(decimal % 2)
     decimal = int(decimal / 2)
     vector[i]=residuo
+    if (i == 0 or decimal<=0):
+      break
     i-=1
   return vector
 
