@@ -75,7 +75,7 @@ def seleccion(ruleta):
 def crossover(poblacion, cromosomas, probCrossover, probMutacion, elitismo):
   if elitismo:
     long = len(poblacion)-2
-  else
+  else:
     long = len(poblacion)
   for i in range(0, long, 2):
     hayCrossover = random.uniform(0, 1)
