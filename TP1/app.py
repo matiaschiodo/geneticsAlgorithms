@@ -72,8 +72,12 @@ def seleccion(ruleta):
         break
   return cromosomas
 
-def crossover(poblacion, cromosomas, probCrossover, probMutacion):
-  for i in range(0, len(poblacion), 2):
+def crossover(poblacion, cromosomas, probCrossover, probMutacion, elitismo):
+  if elitismo:
+    long = len(poblacion)-2
+  else
+    long = len(poblacion)
+  for i in range(0, long, 2):
     hayCrossover = random.uniform(0, 1)
     if(hayCrossover < probCrossover):
       aux = poblacion[cromosomas[i]][4]
