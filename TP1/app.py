@@ -169,9 +169,9 @@ def algoritmoGenetico(tamPoblacion, tamCromosoma, numGeneraciones, probCrossover
   for i in range(numGeneraciones):
     maximo, minimo, promedio = 0, 0, 0
     if torneo:
-      poblacion = crossover(poblacion, seleccion(ruleta(fitness(poblacion))), probCrossover, probMutacion, elitismo)
-    else:
       poblacion = crossover(poblacion, seleccion(tournament(fitness(poblacion))), probCrossover, probMutacion, elitismo)
+    else:
+      poblacion = crossover(poblacion, seleccion(ruleta(fitness(poblacion))), probCrossover, probMutacion, elitismo)
     maximo = maximoCromosoma(poblacion)
     minimo = minimoCromosoma(poblacion)
     promedio = promedioCromosomas(poblacion)
