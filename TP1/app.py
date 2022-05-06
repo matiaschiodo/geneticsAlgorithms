@@ -1,4 +1,3 @@
-from calendar import c
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -42,23 +41,32 @@ def ruleta(fitness):
   ruleta = []
   for i in range(len(fitness)):
     ruleta.append(round(fitness[i] * 100, 2))
-  return ruleta
+  return sorted(ruleta)
 
 def tournament(fitness):
   pob = []
   while True:
-    n = random.randint(1, 10)
-    n1 = random.randint(1,10)
+    n = random.randint(0, 9)
+    n1 = random.randint(0, 9)
     if n1 != n:
-      pob.append(max(fitness[n],fitness[n1]))
+      if fitness[n] > fitness[n1]:
+        pob.append(fitness[n])
+      else:
+        pob.append(fitness[n1])
     if len(pob) == 10:
       break
   return pob
 
-def seleccion(ruleta):
+def seleccion(ruleta, elitismo):
+  if elitismo:
+    long = len(ruleta) - 2
+    totalProb = int(99 - ruleta[-1] - ruleta[-2])
+  else:
+    long = len(ruleta)
+    totalProb = 99
   cromosomas = []
-  for i in range(len(ruleta)):
-    n = random.randint(0, 99)
+  for i in range(long):
+    n = random.randint(0, totalProb)
     prob = 0
     for i in range(0, len(ruleta)):
       prob += round(ruleta[i])
@@ -68,14 +76,26 @@ def seleccion(ruleta):
   return cromosomas
 
 def crossover(poblacion, cromosomas, probCrossover, probMutacion):
-  for i in range(0, len(poblacion), 2):
+  for i in range(0, len(cromosomas), 2):
     hayCrossover = random.uniform(0, 1)
+    corte = random.randint(1, 3)
     if(hayCrossover < probCrossover):
-      aux = poblacion[cromosomas[i]][4]
-      poblacion[cromosomas[i]][4] = poblacion[cromosomas[i+1]][4]
-      poblacion[cromosomas[i+1]][4] = aux
-      poblacion = mutacion(poblacion, cromosomas[i], cromosomas[i+1], probMutacion)
-    return poblacion
+      print(hayCrossover, corte)
+      cromosoma1 = poblacion.index(cromosomas[i])
+      cromosoma2 = poblacion.index(cromosomas[i + 1])
+      print(poblacion[cromosoma1], poblacion[cromosoma2])
+      poblacion[cromosoma1] = np.append(poblacion[cromosoma1][:corte], poblacion[cromosoma2][corte:])
+      poblacion[cromosoma2] = np.append(poblacion[cromosoma2][:corte], poblacion[cromosoma1][corte:])
+      print(poblacion[cromosoma1], poblacion[cromosoma2])
+  return poblacion
+
+pob = inicializarPoblacion(10, 5)
+cromosomas = [pob[2], pob[5]]
+print(pob, cromosomas)
+print(ruleta(fitness(pob)))
+selec = seleccion(ruleta(fitness(pob)), True)
+print(selec)
+(crossover(pob, selec, 0.75, 0.05))
 
 def mutacion(poblacion, cromosoma1, cromosoma2, probMutacion):
   hayMutacion = random.uniform(0, 1)
@@ -109,15 +129,15 @@ def promedioCromosomas(poblacion):
     promedio += arrayToInt(poblacion[i])
   return promedio / len(poblacion)
 
-def algoritmoGenetico(fitness, tamPoblacion, tamCromosoma, numGeneraciones, probCrossover, probMutacion, elitismo, torneo):
+def algoritmoGenetico(tamPoblacion, tamCromosoma, numGeneraciones, probCrossover, probMutacion, elitismo, torneo):
   maximoTotal, minimoTotal, promedioTotal = 0, 0, 0
+  poblacion = inicializarPoblacion(tamPoblacion, tamCromosoma)
   for i in range(numGeneraciones):
-    poblacion = inicializarPoblacion(tamPoblacion, tamCromosoma)
     maximo, minimo, promedio = 0, 0, 0
     if torneo:
-      poblacion = crossover(poblacion, seleccion(ruleta(fitness(poblacion))), probCrossover, probMutacion, elitismo)
-    else:
       poblacion = crossover(poblacion, seleccion(tournament(fitness(poblacion))), probCrossover, probMutacion, elitismo)
+    else:
+      poblacion = crossover(poblacion, seleccion(ruleta(fitness(poblacion))), probCrossover, probMutacion, elitismo)
     maximo = maximoCromosoma(poblacion)
     minimo = minimoCromosoma(poblacion)
     promedio = promedioCromosomas(poblacion)
@@ -133,40 +153,49 @@ def algoritmoGenetico(fitness, tamPoblacion, tamCromosoma, numGeneraciones, prob
   print('Minimo Total: ', minimoTotal, arrayToInt(minimoTotal))
   print('Promedio Total: ', promedioTotal)
   
-
 #algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05)
 # algoritmoGenetico(fitness, 10, 5, 100, 0.75, 0.05)
 # algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05)
 
+def pedirOpcion():
+  correcto=False
+  num=0
+  while(not correcto):
+    try:
+      num = int(input("Introduce un numero entero: "))
+      correcto=True
+    except ValueError:
+      print('Error, introduce un numero entero')
+  return num
+ 
+# salir = False
+# opcion = 0
+ 
+# while not salir:
+#   os.system('cls') 
+#   print ("1. Ruleta")
+#   print ("2. Ruleta con elitismo")
+#   print ("3. Torneo")
+#   print ("4. Torneo con elitismo")
+#   print ("0. Salir")
 
-def menu():
-	
-	os.system('cls') 
-	print ("Selecciona una opción")
-	print ("\t1 - Seleccion Ruleta")
-	print ("\t2 - Seleccion Ruleta con elitismo")
-	print ("\t3 - Seleccion torneo")
-	print ("\t0 - salir")
- 
- 
-while True:
-	
-	menu()
-	opcionMenu = input("Seleccione una opcion: ")
- 
-	if opcionMenu=="1":
-	  algoritmoGenetico(fitness, 10, 5, 200, 0.75, 0.05)
-	#elif opcionMenu=="2":
-	#	pass
-	#elif opcionMenu=="3":
-	#	pass
-	elif opcionMenu=="0":
-		break
-	else:
-		print ("")
-		input("No has pulsado ninguna opción correcta...\nPulsa una tecla para continuar")
+#   print ("Elige una opcion")
 
-  
+#   opcion = pedirOpcion()
+
+#   if opcion == 1:
+#     algoritmoGenetico(10, 5, 200, 0.75, 0.05, False, False)
+#   elif opcion == 2:
+#     algoritmoGenetico(10, 5, 200, 0.75, 0.05, True, False)
+#   elif opcion == 3:
+#     algoritmoGenetico(10, 5, 200, 0.75, 0.05, False, True)
+#   elif opcion == 4:
+#     algoritmoGenetico(10, 5, 200, 0.75, 0.05, True, True)
+#   elif opcion == 0:
+#     salir = True
+#   else:
+#     print ("Introduce un numero entre 1 y 4")
+
 # pob = inicializarPoblacion(10, 5)
 # print("Poblacion inicial: ", pob)
 # print("Cromosomas -> fitness")
