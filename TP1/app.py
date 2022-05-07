@@ -3,17 +3,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def inicializarPoblacion(poblacion, cromosomas):
+  # Inicializamos la población de cromosomas como un array de binarios.
+  # Ej: [[1, 0, 0, 1, 0], [1, 0, 0, 1, 0], [1, 0, 0, 1, 0]]
   return sorted([[random.randint(0, 1) for i in range(cromosomas)] for i in range(poblacion)])
 
+# Funcion para convertir un array de binarios a un entero.
 def arrayToInt(array):
   string = str(array[0])
   for i in range(1, len(array)):
     string += str(array[i])
   return int(string, 2)
 
+# Función para calcular el objetivo.
 def objetivo(cromosoma):
   return ((arrayToInt(cromosoma)) ** 2)
 
+# Función para calcular el fitness de cada cromosoma.
 def fitness(poblacion):
   obj = []
   fitness = []
@@ -23,10 +28,11 @@ def fitness(poblacion):
     fitness.append(obj[i] / sum(obj))
   return fitness
 
+# Función para graficar la probabilidad de la ruleta.
 def grafica(porcentajes):
   #DEFINIMOS ETIQUETAS  
   etiquetas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] #labels
-  #PORCENTAJE DE CADA PORCIÓN. (parametro=porcentajes)
+  #PORCENTAJE DE CADA PORCIÓN. (parametro = porcentajes)
   #DEFIMIMOS COLORES
   colores = ['#1abc9c', '#f1c40f', '#8e44ad', '#e74c3c', '#34495e', '#3498db', '#FFFF00', '#808000', '#32a852', '#008000'] #LabelColor
   #DIBUJAMOS GRÁFICA.  
@@ -36,12 +42,14 @@ def grafica(porcentajes):
   #MOSTRAMOS GRÁFICA.
   plt.show()
 
+# Función para declarar el método de ruleta
 def ruleta(fitness):
   ruleta = []
   for i in range(len(fitness)):
     ruleta.append(fitness[i] * 100)
   return sorted(ruleta)
 
+# Función para declarar el método de torneo
 def tournament(poblacion, fitness):
   pob = []
   while True:
@@ -56,6 +64,7 @@ def tournament(poblacion, fitness):
       break
   return pob
 
+# Función para seleccionar cromosomas para el crossover.
 def seleccion(ruleta, elitismo, metodo):
   if metodo == 1: # Metodo de ruleta
     if elitismo:
@@ -84,6 +93,7 @@ def seleccion(ruleta, elitismo, metodo):
       cromosomas.append(n)
   return cromosomas
 
+# Función para el cruce.
 def crossover(poblacion, cromosomas, probCrossover, probMutacion):
   for i in range(0, len(cromosomas), 2):
     hayCrossover = random.uniform(0, 1)
@@ -96,6 +106,7 @@ def crossover(poblacion, cromosomas, probCrossover, probMutacion):
       mutacion(poblacion, cromosomas[i], cromosomas[i + 1], probMutacion)
   return poblacion
 
+# Función para la mutación.
 def mutacion(poblacion, cromosoma1, cromosoma2, probMutacion):
   hayMutacion = random.uniform(0, 1)
   corte = 1
@@ -107,6 +118,7 @@ def mutacion(poblacion, cromosoma1, cromosoma2, probMutacion):
     return poblacion
   return poblacion
 
+# Función para calcular el mayor cromosoma de la población.
 def maximoCromosoma(poblacion):
   maximo = [0]
   for i in range(len(poblacion)):
@@ -114,6 +126,7 @@ def maximoCromosoma(poblacion):
       maximo = poblacion[i]
   return maximo
 
+# Función para calcular el menor cromosoma de la población.
 def minimoCromosoma(poblacion):
   minimo = [1, 1, 1, 1, 1]
   for i in range(len(poblacion)):
@@ -121,12 +134,14 @@ def minimoCromosoma(poblacion):
       minimo = poblacion[i]
   return minimo
 
+# Función para calcular el promedio de los cromosomas de la población.
 def promedioCromosomas(poblacion):
   promedio = 0
   for i in range(len(poblacion)):
     promedio += arrayToInt(poblacion[i])
   return promedio / len(poblacion)
 
+# Función para ejecutar el algoritmo genético en base a los parametros ingresados.
 def algoritmoGenetico(tamPoblacion, tamCromosoma, numGeneraciones, probCrossover, probMutacion, elitismo, torneo):
   maximoTotal, minimoTotal, promedioTotal = 0, 0, 0
   poblacion = inicializarPoblacion(tamPoblacion, tamCromosoma)
@@ -152,27 +167,24 @@ def algoritmoGenetico(tamPoblacion, tamCromosoma, numGeneraciones, probCrossover
   print('Promedio Total: ', promedioTotal)
 
 def pedirOpcion(minimo, maximo):
-  correcto=False
   num = -1
   while num < minimo or num > maximo:
     num = int(input('Ingrese un numero entre ' + str(minimo) + ' y ' + str(maximo) + ': '))
   return num
- 
+
 salir = False
 opcion = 0
- 
+
 while not salir:
   print("Ingrese el numero de generaciones que desea realizar.")
 
-  numGeneraciones = pedirOpcion(0, 2000)
+  numGeneraciones = pedirOpcion(1, 2000)
 
   print ("1. Ruleta")
   print ("2. Ruleta con elitismo")
   print ("3. Torneo")
   print ("4. Torneo con elitismo")
   print ("0. Salir")
-
-  print ("Elige una opcion")
 
   opcion = pedirOpcion(0, 4)
 
@@ -186,5 +198,3 @@ while not salir:
     algoritmoGenetico(10, 5, 200, 0.75, 0.05, True, True)
   elif opcion == 0:
     salir = True
-  else:
-    print ("Introduce un numero entre 1 y 4")
