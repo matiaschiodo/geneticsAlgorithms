@@ -118,6 +118,7 @@ def graficaBastones(numgen, maximo, minimo, promedio, op):
   img = "grafica_Bastones.jpg"
   x=np.linspace(0,5,100)
   plt.savefig(ruta+"/B-"+str(numgen)+"-"+img, bbox_inches='tight')
+  plt.clf()
 
 # Función para declarar el método de ruleta
 def ruleta(fitness):
