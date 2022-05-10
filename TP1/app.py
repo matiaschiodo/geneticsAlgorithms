@@ -70,11 +70,11 @@ def graficaRuleta(porcentajes, numgen, op):
         os.mkdir(ruta)
   img = "grafica.jpg"
   x=np.linspace(0,5,100)
-  plt.savefig(ruta+"/"+str(numgen)+"-"+img, bbox_inches='tight')
+  plt.savefig(ruta+"/A-"+str(numgen)+"-"+img, bbox_inches='tight')
   plt.clf()
   return porcentajes
 
-def graficaBastones(numgen, maximo, minimo, promedio):
+def graficaBastones(numgen, maximo, minimo, promedio, op):
   ## Declaramos valores para el eje x
   eje_x = ["maximo", "minimo", "promedio"]
   ## Declaramos valores para el eje y
@@ -87,7 +87,37 @@ def graficaBastones(numgen, maximo, minimo, promedio):
   plt.xlabel('Información')
   ## Título de Gráfica
   plt.title('Generacion '+str(numgen))
-  plt.show()
+  
+  if op == 1:
+    ruta = "Ruleta"
+    try:
+      os.stat(ruta)
+    except:
+      os.mkdir(ruta)
+      
+  elif op == 2:
+    ruta = 'Ruleta_elitismo'
+    try:
+      os.stat(ruta)
+    except:
+      os.mkdir(ruta)
+      
+  elif op == 3:
+    ruta= "Torneo"
+    try:
+      os.stat(ruta)
+    except:
+      os.mkdir(ruta)
+      
+  elif op == 4:
+      ruta = "Torneo_elitimos"
+      try:
+        os.stat(ruta)
+      except:
+        os.mkdir(ruta)
+  img = "grafica_Bastones.jpg"
+  x=np.linspace(0,5,100)
+  plt.savefig(ruta+"/B-"+str(numgen)+"-"+img, bbox_inches='tight')
 
 # Función para declarar el método de ruleta
 def ruleta(fitness):
@@ -206,7 +236,7 @@ def algoritmoGenetico(tamPoblacion, tamCromosoma, numGeneraciones, probCrossover
     print('Maximo: ', maximo, arrayToInt(maximo))
     print('Minimo: ', minimo, arrayToInt(minimo))
     print('Promedio: ', promedio)
-    graficaBastones(i, arrayToInt(maximo), arrayToInt(minimo), promedio)
+    graficaBastones(i, arrayToInt(maximo), arrayToInt(minimo), promedio, op)
     maximoTotal = maximoCromosoma(poblacion)
     minimoTotal = minimoCromosoma(poblacion)
     promedioTotal = promedioCromosomas(poblacion)
@@ -217,17 +247,27 @@ def algoritmoGenetico(tamPoblacion, tamCromosoma, numGeneraciones, probCrossover
 def pedirOpcion(minimo, maximo):
   num = -1
   while num < minimo or num > maximo:
-    num = int(input('Ingrese un numero entre ' + str(minimo) + ' y ' + str(maximo) + ': '))
+    try:
+      num = int(input('Ingrese un numero entre ' + str(minimo) + ' y ' + str(maximo) + ': '))
+    except:
+      print("No es un numero")
+    if num == 0: break
+  os.system("cls")
   return num
 
 salir = False
 opcion = 0
 
 while not salir:
-  print("Ingrese el numero de generaciones que desea realizar.")
+  x = 1
+  print("Desea iniciar el programa? - 0 Salir")
+  input(x)
+  if x == 0: break
+  os.system("cls")
+  print("Ingrese el numero de generaciones que desea realizar. 0-Salir")
 
   numGeneraciones = pedirOpcion(1, 2000)
-
+  
   print ("1. Ruleta")
   print ("2. Ruleta con elitismo")
   print ("3. Torneo")
@@ -235,7 +275,7 @@ while not salir:
   print ("0. Salir")
 
   opcion = pedirOpcion(0, 4)
-
+  os.system("cls")
   if opcion == 1:
     algoritmoGenetico(10, 5, numGeneraciones, 0.75, 0.05, False, False, opcion)
   elif opcion == 2:
