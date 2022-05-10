@@ -259,7 +259,7 @@ salir = False
 opcion = 0
 
 while not salir:
-  x = 1
+  x = ""
   print("Desea iniciar el programa? - 0 Salir")
   input(x)
   if x == 0: break
