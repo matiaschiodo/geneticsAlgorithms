@@ -1,3 +1,4 @@
+import os
 import random
 import numpy as np
 import matplotlib.pyplot as plt
@@ -29,7 +30,7 @@ def fitness(poblacion):
   return fitness
 
 # Función para graficar la probabilidad de la ruleta.
-def grafica(porcentajes):
+def graficaRuleta(porcentajes, numgen, op):
   #DEFINIMOS ETIQUETAS  
   etiquetas = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'] #labels
   #PORCENTAJE DE CADA PORCIÓN. (parametro = porcentajes)
@@ -40,6 +41,52 @@ def grafica(porcentajes):
   #TITULO
   plt.title('Gráfica Circular')
   #MOSTRAMOS GRÁFICA.
+  if op == 1:
+    ruta = "Ruleta"
+    try:
+      os.stat(ruta)
+    except:
+      os.mkdir(ruta)
+      
+  elif op == 2:
+    ruta = 'Ruleta_elitismo'
+    try:
+      os.stat(ruta)
+    except:
+      os.mkdir(ruta)
+      
+  elif op == 3:
+    ruta= "Torneo"
+    try:
+      os.stat(ruta)
+    except:
+      os.mkdir(ruta)
+      
+  elif op == 4:
+      ruta = "Torneo_elitimos"
+      try:
+        os.stat(ruta)
+      except:
+        os.mkdir(ruta)
+  img = "grafica.jpg"
+  x=np.linspace(0,5,100)
+  plt.savefig(ruta+"/"+str(numgen)+"-"+img, bbox_inches='tight')
+  plt.clf()
+  return porcentajes
+
+def graficaBastones(numgen, maximo, minimo, promedio):
+  ## Declaramos valores para el eje x
+  eje_x = ["maximo", "minimo", "promedio"]
+  ## Declaramos valores para el eje y
+  eje_y = [maximo,minimo,promedio]
+  ## Creamos Gráfica
+  plt.bar(eje_x, eje_y)
+  ## Legenda en el eje y
+  plt.ylabel('')
+  ## Legenda en el eje x
+  plt.xlabel('Información')
+  ## Título de Gráfica
+  plt.title('Generacion '+str(numgen))
   plt.show()
 
 # Función para declarar el método de ruleta
@@ -142,7 +189,7 @@ def promedioCromosomas(poblacion):
   return promedio / len(poblacion)
 
 # Función para ejecutar el algoritmo genético en base a los parametros ingresados.
-def algoritmoGenetico(tamPoblacion, tamCromosoma, numGeneraciones, probCrossover, probMutacion, elitismo, torneo):
+def algoritmoGenetico(tamPoblacion, tamCromosoma, numGeneraciones, probCrossover, probMutacion, elitismo, torneo, op):
   maximoTotal, minimoTotal, promedioTotal = 0, 0, 0
   poblacion = inicializarPoblacion(tamPoblacion, tamCromosoma)
   for i in range(numGeneraciones):
@@ -150,7 +197,7 @@ def algoritmoGenetico(tamPoblacion, tamCromosoma, numGeneraciones, probCrossover
     if torneo:
       poblacion = crossover(poblacion, seleccion(tournament(poblacion, fitness(poblacion)), elitismo, 2), probCrossover, probMutacion)
     else:
-      poblacion = crossover(poblacion, seleccion(ruleta(fitness(poblacion)), elitismo, 1), probCrossover, probMutacion)
+      poblacion = crossover(poblacion, seleccion(graficaRuleta(ruleta(fitness(poblacion)),i, op), elitismo, 1), probCrossover, probMutacion)
     maximo = maximoCromosoma(poblacion)
     minimo = minimoCromosoma(poblacion)
     promedio = promedioCromosomas(poblacion)
@@ -159,6 +206,7 @@ def algoritmoGenetico(tamPoblacion, tamCromosoma, numGeneraciones, probCrossover
     print('Maximo: ', maximo, arrayToInt(maximo))
     print('Minimo: ', minimo, arrayToInt(minimo))
     print('Promedio: ', promedio)
+    graficaBastones(i, arrayToInt(maximo), arrayToInt(minimo), promedio)
     maximoTotal = maximoCromosoma(poblacion)
     minimoTotal = minimoCromosoma(poblacion)
     promedioTotal = promedioCromosomas(poblacion)
@@ -189,12 +237,12 @@ while not salir:
   opcion = pedirOpcion(0, 4)
 
   if opcion == 1:
-    algoritmoGenetico(10, 5, 200, 0.75, 0.05, False, False)
+    algoritmoGenetico(10, 5, numGeneraciones, 0.75, 0.05, False, False, opcion)
   elif opcion == 2:
-    algoritmoGenetico(10, 5, 200, 0.75, 0.05, True, False)
+    algoritmoGenetico(10, 5, numGeneraciones, 0.75, 0.05, True, False, opcion)
   elif opcion == 3:
-    algoritmoGenetico(10, 5, 200, 0.75, 0.05, False, True)
+    algoritmoGenetico(10, 5, numGeneraciones, 0.75, 0.05, False, True, opcion)
   elif opcion == 4:
-    algoritmoGenetico(10, 5, 200, 0.75, 0.05, True, True)
+    algoritmoGenetico(10, 5, numGeneraciones, 0.75, 0.05, True, True, opcion)
   elif opcion == 0:
     salir = True
