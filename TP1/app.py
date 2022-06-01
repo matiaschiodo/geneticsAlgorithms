@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 def inicializarPoblacion(poblacion, cromosomas):
   # Inicializamos la población de cromosomas como un array de binarios.
   # Ej: [[1, 0, 0, 1, 0], [1, 0, 0, 1, 0], [1, 0, 0, 1, 0]]
-  return sorted([[random.randint(0, 1) for i in range(cromosomas)] for i in range(poblacion)])
+  poblacion = [[random.randint(0, 1) for i in range(cromosomas)] for i in range(poblacion)]
+  return sorted(poblacion)
 
 # Funcion para convertir un array de binarios a un entero.
 def arrayToInt(array):
@@ -17,7 +18,7 @@ def arrayToInt(array):
 
 # Función para calcular el objetivo.
 def objetivo(cromosoma):
-  return ((arrayToInt(cromosoma)) ** 2)
+  return (((arrayToInt(cromosoma))/((2**30)-1))**2)
 
 # Función para calcular el fitness de cada cromosoma.
 def fitness(poblacion):
@@ -63,12 +64,12 @@ def graficaRuleta(porcentajes, numgen, op):
       os.mkdir(ruta)
       
   elif op == 4:
-      ruta = "Torneo_elitimos"
+      ruta = "Torneo_elitismo"
       try:
         os.stat(ruta)
       except:
         os.mkdir(ruta)
-  img = "grafica.jpg"
+  img = "grafica.png"
   x=np.linspace(0,5,100)
   plt.savefig(ruta+"/A-"+str(numgen)+"-"+img, bbox_inches='tight')
   plt.clf()
@@ -115,7 +116,7 @@ def graficaBastones(numgen, maximo, minimo, promedio, op):
         os.stat(ruta)
       except:
         os.mkdir(ruta)
-  img = "grafica_Bastones.jpg"
+  img = "grafica_Bastones.png"
   x=np.linspace(0,5,100)
   plt.savefig(ruta+"/B-"+str(numgen)+"-"+img, bbox_inches='tight')
   plt.clf()
@@ -206,9 +207,9 @@ def maximoCromosoma(poblacion):
 
 # Función para calcular el menor cromosoma de la población.
 def minimoCromosoma(poblacion):
-  minimo = [1, 1, 1, 1, 1]
-  for i in range(len(poblacion)):
-    if(arrayToInt(poblacion[i]) < arrayToInt(minimo)):
+  minimo = poblacion[0]
+  for i in range(1, len(poblacion)):
+    if(arrayToInt(minimo) > arrayToInt(poblacion[i])):
       minimo = poblacion[i]
   return minimo
 
@@ -234,16 +235,10 @@ def algoritmoGenetico(tamPoblacion, tamCromosoma, numGeneraciones, probCrossover
     promedio = promedioCromosomas(poblacion)
     print('Generacion: ', i)
     print('Poblacion: ', poblacion)
-    print('Maximo: ', maximo, arrayToInt(maximo))
-    print('Minimo: ', minimo, arrayToInt(minimo))
+    print('Maximo: ', arrayToInt(maximo))
+    print('Minimo: ', arrayToInt(minimo))
     print('Promedio: ', promedio)
     graficaBastones(i, arrayToInt(maximo), arrayToInt(minimo), promedio, op)
-    maximoTotal = maximoCromosoma(poblacion)
-    minimoTotal = minimoCromosoma(poblacion)
-    promedioTotal = promedioCromosomas(poblacion)
-  print('Maximo Total: ', maximoTotal, arrayToInt(maximoTotal))
-  print('Minimo Total: ', minimoTotal, arrayToInt(minimoTotal))
-  print('Promedio Total: ', promedioTotal)
 
 def pedirOpcion(minimo, maximo):
   num = -1
@@ -253,7 +248,7 @@ def pedirOpcion(minimo, maximo):
     except:
       print("No es un numero")
     if num == 0: break
-  os.system("cls")
+  os.system('cls' if os.name == 'nt' else 'clear')
   return num
 
 salir = False
@@ -264,7 +259,7 @@ while not salir:
   print("Desea iniciar el programa? - 0 Salir")
   input(x)
   if x == 0: break
-  os.system("cls")
+  os.system('cls' if os.name == 'nt' else 'clear')
   print("Ingrese el numero de generaciones que desea realizar. 0-Salir")
 
   numGeneraciones = pedirOpcion(1, 2000)
@@ -276,14 +271,14 @@ while not salir:
   print ("0. Salir")
 
   opcion = pedirOpcion(0, 4)
-  os.system("cls")
+  os.system('cls' if os.name == 'nt' else 'clear')
   if opcion == 1:
-    algoritmoGenetico(10, 5, numGeneraciones, 0.75, 0.05, False, False, opcion)
+    algoritmoGenetico(10, 30, numGeneraciones, 0.75, 0.05, False, False, opcion)
   elif opcion == 2:
-    algoritmoGenetico(10, 5, numGeneraciones, 0.75, 0.05, True, False, opcion)
+    algoritmoGenetico(10, 30, numGeneraciones, 0.75, 0.05, True, False, opcion)
   elif opcion == 3:
-    algoritmoGenetico(10, 5, numGeneraciones, 0.75, 0.05, False, True, opcion)
+    algoritmoGenetico(10, 30, numGeneraciones, 0.75, 0.05, False, True, opcion)
   elif opcion == 4:
-    algoritmoGenetico(10, 5, numGeneraciones, 0.75, 0.05, True, True, opcion)
+    algoritmoGenetico(10, 30, numGeneraciones, 0.75, 0.05, True, True, opcion)
   elif opcion == 0:
     salir = True
