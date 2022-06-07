@@ -7,7 +7,11 @@ import os
 popSize = 10
 chromSize = 30
 probCrossover = 0.75
-probMutacionActual = 0.25
+probMutacionActual = 0.05
+# roulette or tournament
+method = "roulette"
+# True or False
+elitism = False
 
 def clearScreen():
 	# Limpia la terminal
@@ -53,7 +57,7 @@ class Chromosome(object):
 	
 	def calculateScore(self):
 		# Calcula y guarda el puntaje según la función objetivo
-		self.score = ((self.value/((2**30)-1))**2)
+		self.score = ((self.value/((2**30) - 1))**2)
 	
 	def calculateFitness(self, totalScore):
 		# Calcula y guarda el valor fitness
@@ -61,13 +65,13 @@ class Chromosome(object):
 	
 	def mutate(self):
 		# Muta un gen aleatorio del cromosoma
-		punto = rnd.randint(0, chromSize-1)
+		punto = rnd.randint(0, chromSize - 1)
 		self.gen[punto] = 1 - self.gen[punto]
 		self.calculateValue()
 		self.calculateScore()
 
 class Population(object):
-	def __init__(self, prevPopulation=None):
+	def __init__(self, prevPopulation=None, method=None, elitism=False):
 		# Constructor de la población
 		self.chromosomes = []
 		self.totalScore = 0
@@ -79,14 +83,23 @@ class Population(object):
 		# Crear población hija en base a la población previa
 		else:
 			# Aplicar elitismo
-			self.addChromosome(Chromosome(chromSize, prevPopulation.chromosomes[-2]))
-			self.addChromosome(Chromosome(chromSize, prevPopulation.chromosomes[-1]))
-			for i in range(int(popSize/2)-1):
-				padre = prevPopulation.selectWeightedChromosome()
-				madre = prevPopulation.selectWeightedChromosome()
+			if elitism:
+				self.addChromosome(Chromosome(chromSize, prevPopulation.chromosomes[-2]))
+				self.addChromosome(Chromosome(chromSize, prevPopulation.chromosomes[-1]))
+				size = int(popSize / 2) - 1
+			else:
+				size = int(popSize / 2)
+			for i in range(size):
+				# Método de selección
+				if method == "roulette":
+					padre = prevPopulation.selectWeightedChromosome()
+					madre = prevPopulation.selectWeightedChromosome()
+				elif method == "tournament":
+					padre = prevPopulation.tournament()
+					madre = prevPopulation.tournament()
 				# Aplicar crossover
-				if decision(probCrossover)&(padre!=madre):
-					punto = rnd.randint(1, chromSize-1)
+				if decision(probCrossover) & (padre != madre):
+					punto = rnd.randint(1, chromSize - 1)
 					hijo1 = Chromosome(chromSize, madre, padre, punto)
 					hijo2 = Chromosome(chromSize, madre, padre, punto)
 					isNew = True
@@ -135,6 +148,16 @@ class Population(object):
 			population = self.chromosomes,
 			weights = w
 		)[0]
+
+	def selectChromosome(self):
+		# Devuelve un cromosoma aleatorio
+		return self.chromosomes[rnd.randint(0, popSize - 1)]
+
+	def tournament(self):
+		# Devuelve el mejor cromosoma
+		padre = self.selectChromosome()
+		madre = self.selectChromosome()
+		return padre if padre.score > madre.score else madre
 	
 	def printStats(self):
 		# Imprime en pantalla estadisticas de la población
@@ -205,16 +228,37 @@ class Population(object):
 
 clearScreen()
 
-# Obtener número de iteraciones del usuario
 iteraciones = int(input("Ingrese cantidad de iteraciones a ejecutar: "))
 
+clearScreen()
+
+print ("1. Ruleta")
+print ("2. Ruleta con elitismo")
+print ("3. Torneo")
+print ("4. Torneo con elitismo")
+print ("0. Salir")
+
+option = int(input('Ingrese un numero entre 0 y 4: '))
+
+if(option == 2 or option == 4):
+	elitism = True
+if(option == 3 or option == 4):
+	method = "tournament" 
+
+clearScreen()
+
+
 # Configuración para xlsxwriter
+elit = ''
+if elitism:
+	elit = 'with_elitism'
+else:
+	elit = 'without_elitism'
 rowCounter = 0
 rowCounter_graph = 0
 columnAlign = 0
 columnAlign_graph = 0
-filename = "Resultado_{iter}i_{date}.xlsx".format(iter=iteraciones,
-	date=datetime.datetime.now().strftime("%d-%m-%Y_%H%M%S"))
+filename = "Result_{method}_{elisism}_{iter}_{date}.xlsx".format(iter=iteraciones, method=method, elisism=elit, date=datetime.datetime.now().strftime("%d-%m-%Y_%H%M%S"))
 workbook = xlsxwriter.Workbook(filename)
 summarySheet = workbook.add_worksheet("Resumen")
 summarySheet.set_column(0, 0, 18)
@@ -239,7 +283,8 @@ graphSheet.write_row(rowCounter_graph, columnAlign_graph,
 rowCounter_graph += 1
 
 # Crear primera instancia de la población
-newPopulation = Population()
+newPopulation = Population(None, method, elitism)
+maximum = newPopulation.chromosomes[0]
 
 for n in range(iteraciones):
 	# Calcular y guardar puntajes y valores fitness de los cromosomas
@@ -249,7 +294,7 @@ for n in range(iteraciones):
 	newPopulation.exportDataToSpreadsheet(n)
 	# Crear nueva población en base a la anterior
 	prevPopulation = newPopulation
-	newPopulation = Population(prevPopulation)
+	newPopulation = Population(prevPopulation, method, elitism)
 
 # Generar hoja resumen
 row = 0
@@ -272,6 +317,12 @@ row += 1
 summarySheet.write(row, column, "Prob. mutación")
 summarySheet.write(row, column+1, probMutacionActual*100)
 row += 1
+summarySheet.write(row, column, "Método de cruce")
+summarySheet.write(row, column+1, method)
+row += 1
+summarySheet.write(row, column, "Elitismo")
+summarySheet.write(row, column+1, str(elitism))
+row += 1
 summarySheet.merge_range(row, column, row, column+1, "Resultado", titleFormat)
 row += 1
 summarySheet.write(row, column, "Cromosoma máximo")
@@ -279,6 +330,12 @@ summarySheet.write(row, column+1, resultChrom.asString(), chromFormat)
 row += 1
 summarySheet.write(row, column, "Valor entero")
 summarySheet.write(row, column+1, resultChrom.value)
+row += 1
+summarySheet.write(row, column, "Función objetivo")
+summarySheet.write(row, column+1, resultChrom.score)
+row += 1
+summarySheet.write(row, column, "Función fitness")
+summarySheet.write(row, column+1, resultChrom.fitness)
 
 # Generar gráfico
 chart = workbook.add_chart({"type": "line"})
