@@ -85,6 +85,7 @@ class Element(object):
 		self.ratio = value / volume
 
 def busquedaExhaustiva(elementList, maxSize):
+	print("Busqueda exhaustiva")
 	# Crear primera mochila vacia y marcarla como resultado óptimo.
 	# Se usará como punto de partida para comparar futuros resultados.
 	maxBag = Bag(maxSize)
@@ -109,7 +110,7 @@ def busquedaExhaustiva(elementList, maxSize):
 	return maxBag
 
 def busquedaGreedy(elementList, maxSize):
-
+	print("Busqueda greedy")
 	# Crear nueva mochila.
 	bag = Bag(maxSize)
 
@@ -126,9 +127,6 @@ def busquedaGreedy(elementList, maxSize):
 	return bag
 
 ### PROGRAMA
-
-clearScreen()
-
 # Iniciar parámetros de búsqueda.
 maxSize = 4200
 elements = [
@@ -144,10 +142,27 @@ elements = [
 	Element(353, 28)
 ]
 
+# Elementos punto 3
+# maxSize = 3000
+# elements = [
+# 	Element(1800, 72),
+# 	Element(600, 36),
+# 	Element(1200, 60),
+# ]
+
+clearScreen()
+print ("1. Busqueda Exhaustiva")
+print ("2. Busqueda Greedy")
+option = int(input('Ingrese opcion: '))
+clearScreen()
+
 start_time = time.time()
 
-# bag = busquedaExhaustiva(elements, maxSize)
-bag = busquedaGreedy(elements, maxSize)
+if(option == 1):
+	bag = busquedaExhaustiva(elements, maxSize)
+if(option == 2):
+	bag = busquedaGreedy(elements, maxSize)
+
 printResults(bag)
 
 print("--- %s seconds ---" % (time.time() - start_time))
