@@ -247,7 +247,6 @@ if(option == 3 or option == 4):
 
 clearScreen()
 
-
 # Configuración para xlsxwriter
 elit = ''
 if elitism:
