@@ -62,9 +62,9 @@ coordenadas = [
 
 # Inicializar parámetros de ejecución
 popSize = 50
-chromSize = len(capitales) # Son 24 capitales
-probCrossover = 0.75
-probMutacion = 0.1
+chromSize = len(capitales) # 24 capitales
+probCrossover = 1
+probMutacion = 0.2
 number_list = list(range(chromSize))
 distance_matrix = []
 
@@ -305,11 +305,14 @@ def busquedaUnitaria():
 	input("Presione una tecla para volver al menú...")
 
 def busquedaTotal():
-	bestScore = 0
+	bestScore = -1
+	bestCapital = -1
 	for i in range(len(number_list)):
 		resultChrom = heuristica(i)
-		if (resultChrom.score < bestScore) | (bestScore == 0):
+		if (resultChrom.score < bestScore) | (bestScore == -1):
 			bestScore = resultChrom.score
+			bestCapital = i
+	resultChrom = heuristica(bestCapital)
 	drawChromToFile(resultChrom, "busqueda_total")
 	printResult(resultChrom)
 	printCities(resultChrom)
