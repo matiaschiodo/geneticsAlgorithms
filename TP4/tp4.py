@@ -9,7 +9,7 @@ import os
 def clearScreen():
 	os.system('cls' if os.name == 'nt' else 'clear')
 
-def ifs(mat, variable = False, ini = 0, step = 1, end = 0):
+def ifs(mat, variable = False, ini = 0, step = 1, end = 0, r = 255, g = 255, b = 255):
 	a = ini
 	while a <= end:
 		# image size
@@ -38,13 +38,13 @@ def ifs(mat, variable = False, ini = 0, step = 1, end = 0):
 			y  = x * mat[i][2] + y * mat[i][3] + mat[i][5]
 			x = x0
 			if x < xa:
-					xa = x
+				xa = x
 			if x > xb:
-					xb = x
+				xb = x
 			if y < ya:
-					ya = y
+				ya = y
 			if y > yb:
-					yb = y
+				yb = y
 
 		imgy = round(imgy * (yb - ya) / (xb - xa)) 
 		image = Image.new("RGB", (imgx, imgy))
@@ -63,7 +63,7 @@ def ifs(mat, variable = False, ini = 0, step = 1, end = 0):
 			x = x0
 			jx = int((x - xa) / (xb - xa) * (imgx - 1))
 			jy = (imgy - 1) - int((y - ya) / (yb - ya) * (imgy - 1))
-			if jx < imgx and jy < imgy: image.putpixel((jx, jy), (0, 255, 0))
+			if jx < imgx and jy < imgy: image.putpixel((jx, jy), (r, g, b))
 
 		image.resize((512, 512))
 		if variable == True:
@@ -112,7 +112,8 @@ def mountain():
 			jumpover = 1 - (y // step) % 2 if level > 0 else 0
 			for x in range(step * jumpover, size + 1, step * (1 + jumpover)):
 				pointer = 1 - (x // step) % 2 + 2 * jumpover if level > 0 else 3
-				yref, xref = step * (1 - pointer // 2), step * (1 - pointer % 2)
+				yref = step * (1 - pointer // 2)
+				xref = step * (1 - pointer % 2)
 				corner1 = height[y - yref, x - xref]
 				corner2 = height[y + yref, x + xref]
 				average = (corner1 + corner2) / 2.0
@@ -182,6 +183,15 @@ while (opcion != 0):
 		variable = ''
 		while variable != 1 and variable != 2:
 			clearScreen()
+			print("Color Rojo de 0 a 255: ")
+			r = int(input("Ingrese opción: "))
+			clearScreen()
+			print("Color Verde de 0 a 255: ")
+			g = int(input("Ingrese opción: "))
+			clearScreen()
+			print("Color Azul de 0 a 255: ")
+			b = int(input("Ingrese opción: "))
+			clearScreen()
 			print("Con variable? 2 para Si, 1 para No")
 			variable = int(input("Ingrese opción: "))
 			if variable == 2:
@@ -197,6 +207,6 @@ while (opcion != 0):
 				clearScreen()
 			
 			if variable == 1:
-				ifs(mat)
+				ifs(mat, r = r, g = g, b = b)
 			else:
-				ifs(mat, True, ini, step, end)
+				ifs(mat, True, ini, step, end, r, g, b)
